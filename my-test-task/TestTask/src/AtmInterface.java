@@ -3,9 +3,6 @@ import java.util.*;
 public class AtmInterface {
 
     private static Map<Integer, Integer> stash = new LinkedHashMap<>();
-    private Set entrySet;
-    private Iterator iterator;
-
 
     /*
     *
@@ -81,8 +78,13 @@ public class AtmInterface {
      */
 
 
+    public AtmInterface() {
+        initATM();
+        while (!getInput().equals("quit"))
+            getInput();
+        }
 
-    public static void initATM() {
+    private static void initATM() {
         stash.put(5000, 0);
         stash.put(1000, 0);
         stash.put(500, 0);
@@ -135,6 +137,7 @@ public class AtmInterface {
             }
 
             int key = checkForNominal(amount);
+
             if (key != 0) {
                 System.out.println(key + "=" + amount / key);
                 while (!getInput().equals("quit")) getInput();
@@ -142,6 +145,12 @@ public class AtmInterface {
                 getForAllStash(amount);
         }
 
+//    private boolean hasElement() {
+//        for (Map.Entry stashEntry : stash.entrySet()) {
+//            if
+//        }
+//        return true;
+ //   }
 
     /*
     *
@@ -157,22 +166,18 @@ public class AtmInterface {
 
     private void getForAllStash(int amount) {
 
-        Map.Entry stashEntry;
-        entrySet = stash.entrySet();
-        iterator = entrySet.iterator();
-
         while (amount != 0) {
-            while (iterator.hasNext()) {
-                stashEntry = (Map.Entry) iterator.next();
+            for (Map.Entry stashEntry : stash.entrySet()) {
                 if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
                     amount -= (int) stashEntry.getKey();
                     stash.put((int) stashEntry.getKey(), (int) stashEntry.getValue() - 1);
-                    System.out.println(stashEntry.getKey() + " ruble bill");
+                    System.out.println(stashEntry.getKey() + "=1");
                     get(amount);
                 }
             }
         }
     }
+
 
     /*
     *
@@ -188,13 +193,10 @@ public class AtmInterface {
      */
 
     private int checkForNominal(int amount) {
-        entrySet = stash.entrySet();
-        iterator = entrySet.iterator();
-        Map.Entry stashEntry;
+
         int myKey = 0;
 
-        while (iterator.hasNext()) {
-            stashEntry = (Map.Entry) iterator.next();
+        for (Map.Entry stashEntry : stash.entrySet()){
             if (((amount % (int) stashEntry.getKey()) == 0 ) && ((int) stashEntry.getValue() != 0)) {
                 if (((amount / (int) stashEntry.getKey()) <= (int) stashEntry.getValue())) {
                     myKey = (int) stashEntry.getKey();
@@ -212,11 +214,9 @@ public class AtmInterface {
       */
 
     private void dump() {
-        entrySet = stash.entrySet();
-        iterator = entrySet.iterator();
 
-        while (iterator.hasNext()) {
-            Map.Entry stashEntry = (Map.Entry) iterator.next();
+
+        for (Map.Entry stashEntry : stash.entrySet()) {
             if ((int) stashEntry.getValue() != 0)
                 System.out.println(stashEntry.getValue() + " bill to  " + stashEntry.getKey() + "  rubles");
         }
@@ -230,11 +230,8 @@ public class AtmInterface {
     private int state() {
 
         int sum = 0;
-        entrySet = stash.entrySet();
-        iterator = entrySet.iterator();
 
-        while (iterator.hasNext()) {
-            Map.Entry stashEntry = (Map.Entry) iterator.next();
+        for (Map.Entry stashEntry : stash.entrySet()) {
             sum += (int) stashEntry.getKey() * (int) stashEntry.getValue();
         }
 
@@ -246,7 +243,9 @@ public class AtmInterface {
     }
 
 
-    public String getInput() {
+     private String getInput() {
+
+
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
 
@@ -267,17 +266,23 @@ public class AtmInterface {
 
 
         if (input.contains("put")) {
+
             input = input.substring(4, input.length());
             int d = Integer.parseInt(input.substring(0, input.indexOf(" ")));
             int count = Integer.parseInt(input.substring(input.indexOf(" ") + 1, input.length()));
+
             put(d, count);
+
         } else
         if (input.contains("get")) {
+
             input = input.substring(4, input.length());
             int amount = Integer.parseInt(input);
+
             get(amount);
 
         } else
+
             switch (input) {
                 case "dump" :
                     if (state() == 0) System.out.println("empty");
@@ -285,11 +290,12 @@ public class AtmInterface {
                         dump();
                     break;
                 case "state" :
-                    System.out.println("Current stash = " + state());;
+                    System.out.println("Current stash = " + state());
                     break;
                 case "quit" :
                     quit();
             }
+
         return input;
     }
 
