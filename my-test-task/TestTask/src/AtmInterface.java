@@ -143,11 +143,29 @@ public class AtmInterface {
         } else {
             if (hasElement(amount)) {
                 getForAllStash(amount);
-            } else
+            } else {
+                System.out.println("without " + amount);
                 System.out.println("impossible");
-            getInput();
+                getInput();
+            }
         }
     }
+
+    /*
+    *
+    * Этот метод проверяет : а можем ли мы выдать amount?
+    * Его пришлось ввести из-за того, что наш алгоритм выдает сообщение о том,
+    * "что выдать сумму не выйдет", только в том случае, когда amount > state
+    * Т.е., например, в банкомате лежит одна купюра 1000 у.е., нам необходимо снять
+    * 500 у.е.
+    * и, несмотря на то, что amount > state, выдать купюру не выйдет, потому что нам нечем.
+    *
+    * именно для этого и нужен метод hasElement(), который возвращает Key элемента,
+    * который мы должны выдать, если таковой существует.
+    *
+    *
+    *
+     */
 
     private boolean hasElement(int amount) {
         boolean element = false;
@@ -173,12 +191,14 @@ public class AtmInterface {
 
     private void getForAllStash(int amount) {
 
+
         while (amount != 0) {
             for (Map.Entry stashEntry : stash.entrySet()) {
                 if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
-                    amount -= (int) stashEntry.getKey();
-                    stash.put((int) stashEntry.getKey(), (int) stashEntry.getValue() - 1);
-                    System.out.println(stashEntry.getKey() + "=1");
+                    int billsCount = (int) Math.floor(amount / (int) stashEntry.getKey());
+                    amount -= (int) stashEntry.getKey() * billsCount;
+                    stash.put((int) stashEntry.getKey(), (int) stashEntry.getValue() - billsCount);
+                    System.out.println(stashEntry.getKey() + "=" + billsCount);
                     get(amount);
                 }
             }
@@ -226,7 +246,7 @@ public class AtmInterface {
 
         for (Map.Entry stashEntry : stash.entrySet()) {
             if ((int) stashEntry.getValue() != 0)
-                System.out.println(stashEntry.getValue() + " bill to  " + stashEntry.getKey() + "  rubles");
+                System.out.println(stashEntry.getKey() + "=" + stashEntry.getValue());
         }
     }
 
