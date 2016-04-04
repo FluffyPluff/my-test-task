@@ -2,7 +2,7 @@ import java.util.*;
 
 public class AtmInterface {
 
-    private static Map<Integer, Integer> stash = new LinkedHashMap<>();
+    private static Map<Integer, Integer> stash;
 
     /*
     *
@@ -79,6 +79,7 @@ public class AtmInterface {
 
 
     public AtmInterface() {
+        stash = new LinkedHashMap<>();
         initATM();
         getInput();
         }
@@ -115,75 +116,17 @@ public class AtmInterface {
     }
 
 
-    /*
-    *
-    * Здесь мы реализуем метод get(), с помощью двух методов --
-    * getForAllStash() -- если мы не можем выдать amount купюрами одного номинала
-    * checkForNominal() -- проверяем, можем ли мы выдать amount купюрами одного номинала
-    *
-    * Так же, если кол-во купюр в банкомате меньше, чем мы просим выдать,
-    * То мы выполняем метод get(state()), т.е. get от количества всех купюр банкомата.
-    *
-     */
 
 
-    private void get(int amount) {
 
-
-        if (amount > state()) {
-            System.out.println("without " + (amount - state()));
-            amount = state();
-        }
-
-
-        int key = checkForNominal(amount);
-
-        if (key != 0) {
-            getInput();
-        } else {
-            if (hasElement(amount)) {
-                getForAllStash(amount);
-            } else {
-                System.out.println("without " + amount);
-                System.out.println("impossible");
-                getInput();
-            }
-        }
-    }
-
-    /*
-    *
-    * Этот метод проверяет : а можем ли мы выдать amount?
-    * Его пришлось ввести из-за того, что наш алгоритм выдает сообщение о том,
-    * "что выдать сумму не выйдет", только в том случае, когда amount > state
-    * Т.е., например, в банкомате лежит одна купюра 1000 у.е., нам необходимо снять
-    * 500 у.е.
-    * и, несмотря на то, что amount > state, выдать купюру не выйдет, потому что нам нечем.
-    *
-    * именно для этого и нужен метод hasElement(), который возвращает Key элемента,
-    * который мы должны выдать, если таковой существует.
-    *
-    *
-    *
-     */
-
-    private boolean hasElement(int amount) {
-        boolean element = false;
-        for (Map.Entry stashEntry : stash.entrySet()) {
-            if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
-                element = true;
-            }
-        }
-        return element;
-    }
 
     /*
     *
     *  А этот код реализует тот алгоритм, который я описал в самом начале:
-    *   Пробегаемся по элементам "cнизу-вверх", если встречаем, что ключ элемента
-     * (номинал) меньше amount, то останавливаемся на этом элементе, берем одну купюру
-     * (уменьшаем value на 1), уменьшаем amount на размер номинала и заново пробегаемся
-     * по всем элементам,
+    *   Пробегаемся по элементам "сверху-вниз", если встречаем, что ключ элемента
+     * (номинал) меньше amount, то останавливаемся на этом элементе, берем кол-во купюр
+     *  заданного номинала, которые мы можем выдать, "выдаем" их, уменьшаем кол-во
+     *  купюр в банкомате на число выданных.
      * все это повторяем до тех пор, пока amount не уменьшится до 0
     *
      */
@@ -235,6 +178,74 @@ public class AtmInterface {
         }
         return myKey;
     }
+
+
+
+
+        /*
+    *
+    * Этот метод проверяет : а можем ли мы выдать amount?
+    * Его пришлось ввести из-за того, что наш алгоритм выдает сообщение о том,
+    * "что выдать сумму не выйдет", только в том случае, когда amount > state
+    * Т.е., например, в банкомате лежит одна купюра 1000 у.е., нам необходимо снять
+    * 500 у.е.
+    * и, несмотря на то, что amount > state, выдать купюру не выйдет, потому что нам нечем.
+    *
+    * именно для этого и нужен метод hasElement(), который возвращает Key элемента,
+    * который мы должны выдать, если таковой существует.
+    *
+    *
+    *
+     */
+
+    private boolean hasElement(int amount) {
+        boolean element = false;
+        for (Map.Entry stashEntry : stash.entrySet()) {
+            if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
+                element = true;
+            }
+        }
+        return element;
+    }
+
+
+
+    /*
+    *
+    * Здесь мы реализуем метод get(), с помощью двух методов --
+    * getForAllStash() -- если мы не можем выдать amount купюрами одного номинала
+    * checkForNominal() -- проверяем, можем ли мы выдать amount купюрами одного номинала
+    *
+    * Так же, если кол-во купюр в банкомате меньше, чем мы просим выдать,
+    * То мы выполняем метод get(state()), т.е. get от количества всех купюр банкомата.
+    *
+     */
+
+
+    private void get(int amount) {
+
+
+        if (amount > state()) {
+            System.out.println("without " + (amount - state()));
+            amount = state();
+        }
+
+
+        int key = checkForNominal(amount);
+
+        if (key != 0) {
+            getInput();
+        } else {
+            if (hasElement(amount)) {
+                getForAllStash(amount);
+            } else {
+                System.out.println("without " + amount);
+                System.out.println("impossible");
+                getInput();
+            }
+        }
+    }
+
 
      /*
      пробегаемся по всем элементам, и если Value (кол-во купюр) не равно 0
@@ -289,7 +300,7 @@ public class AtmInterface {
         *  То в input'e по-любому есть цифры, которые мы даем как аргумент
         *  Эти цифры содержатся в input'e, начиная с 4 позиции, в итоге
         *  мы парсим input, забирая из него все числа и отправляя их в
-        *  нашу структуру данных
+        *  stash
         *
          */
 
