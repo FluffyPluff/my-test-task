@@ -80,8 +80,7 @@ public class AtmInterface {
 
     public AtmInterface() {
         initATM();
-        while (!getInput().equals("quit"))
-            getInput();
+        getInput();
         }
 
     private static void initATM() {
@@ -131,26 +130,34 @@ public class AtmInterface {
     private void get(int amount) {
 
 
-            if (amount > state()) {
-                System.out.println("without " + (amount - state()));
-                amount = state();
-            }
-
-            int key = checkForNominal(amount);
-
-            if (key != 0) {
-                System.out.println(key + "=" + amount / key);
-                while (!getInput().equals("quit")) getInput();
-            } else
-                getForAllStash(amount);
+        if (amount > state()) {
+            System.out.println("without " + (amount - state()));
+            amount = state();
         }
 
-//    private boolean hasElement() {
-//        for (Map.Entry stashEntry : stash.entrySet()) {
-//            if
-//        }
-//        return true;
- //   }
+
+        int key = checkForNominal(amount);
+
+        if (key != 0) {
+            getInput();
+        } else {
+            if (hasElement(amount)) {
+                getForAllStash(amount);
+            } else
+                System.out.println("impossible");
+            getInput();
+        }
+    }
+
+    private boolean hasElement(int amount) {
+        boolean element = false;
+        for (Map.Entry stashEntry : stash.entrySet()) {
+            if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
+                element = true;
+            }
+        }
+        return element;
+    }
 
     /*
     *
@@ -201,6 +208,7 @@ public class AtmInterface {
                 if (((amount / (int) stashEntry.getKey()) <= (int) stashEntry.getValue())) {
                     myKey = (int) stashEntry.getKey();
                     stash.put(myKey, stash.get(myKey) - amount/myKey);
+                    System.out.println(myKey + "=" + amount/myKey);
                     amount = 0;
                 }
             }
@@ -239,6 +247,7 @@ public class AtmInterface {
     }
 
     private void quit() {
+        System.out.print("EXIT");
         System.exit(-1);
     }
 
@@ -295,6 +304,8 @@ public class AtmInterface {
                 case "quit" :
                     quit();
             }
+
+         while (!input.equals("quit")) getInput();
 
         return input;
     }
