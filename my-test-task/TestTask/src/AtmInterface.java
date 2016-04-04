@@ -3,7 +3,7 @@ import java.util.*;
 public class AtmInterface {
 
     private static Map<Integer, Integer> stash;
-
+    private int summa;
     /*
     *
     *       Этот код -- один сплошной костыль.
@@ -79,6 +79,7 @@ public class AtmInterface {
 
 
     public AtmInterface() {
+        summa = 0;
         stash = new LinkedHashMap<>();
         initATM();
         getInput();
@@ -132,19 +133,26 @@ public class AtmInterface {
      */
 
 
+
     private void getForAllStash(int amount) {
 
 
         while (amount != 0) {
             for (Map.Entry stashEntry : stash.entrySet()) {
+
                 if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
+
                     int billsCount = (int) Math.floor(amount / (int) stashEntry.getKey());
                     amount -= (int) stashEntry.getKey() * billsCount;
+                    summa += (int) stashEntry.getKey() * billsCount;
                     stash.put((int) stashEntry.getKey(), (int) stashEntry.getValue() - billsCount);
-                    System.out.println(stashEntry.getKey() + "=" + billsCount);
+                    System.out.print(stashEntry.getKey() + "=" + billsCount + ", ");
+
                     get(amount);
                 }
+
             }
+
         }
     }
 
@@ -162,16 +170,19 @@ public class AtmInterface {
     *
      */
 
+
     private int checkForNominal(int amount) {
 
         int myKey = 0;
 
         for (Map.Entry stashEntry : stash.entrySet()){
+
             if (((amount % (int) stashEntry.getKey()) == 0 ) && ((int) stashEntry.getValue() != 0)) {
+
                 if (((amount / (int) stashEntry.getKey()) <= (int) stashEntry.getValue())) {
                     myKey = (int) stashEntry.getKey();
                     stash.put(myKey, stash.get(myKey) - amount/myKey);
-                    System.out.println(myKey + "=" + amount/myKey);
+                    System.out.println(myKey + "=" + amount/myKey + ", " + "всего " + (summa + amount));
                     amount = 0;
                 }
             }
@@ -234,6 +245,7 @@ public class AtmInterface {
         int key = checkForNominal(amount);
 
         if (key != 0) {
+            summa = 0;
             getInput();
         } else {
             if (hasElement(amount)) {
@@ -241,9 +253,11 @@ public class AtmInterface {
             } else {
                 System.out.println("without " + amount);
                 System.out.println("impossible");
+                summa = 0;
                 getInput();
             }
         }
+
     }
 
 
