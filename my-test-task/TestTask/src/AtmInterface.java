@@ -78,6 +78,9 @@ public class AtmInterface {
      */
 
 
+
+
+
     public AtmInterface() {
         summa = 0;
         stash = new LinkedHashMap<>();
@@ -138,14 +141,16 @@ public class AtmInterface {
 
 
         while (amount != 0) {
-            for (Map.Entry stashEntry : stash.entrySet()) {
+            for (Map.Entry<Integer, Integer> stashEntry : stash.entrySet()) {
 
-                if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
+                if ((amount >=  stashEntry.getKey()) && ( stashEntry.getValue() != 0)) {
 
+                    /* billsCount -- переменная, отвечающая за кол-во купюр, которые мы можем выдать  */
                     int billsCount = (int) Math.floor(amount / (int) stashEntry.getKey());
-                    amount -= (int) stashEntry.getKey() * billsCount;
-                    summa += (int) stashEntry.getKey() * billsCount;
-                    stash.put((int) stashEntry.getKey(), (int) stashEntry.getValue() - billsCount);
+
+                    amount -=  stashEntry.getKey() * billsCount;
+                    summa +=  stashEntry.getKey() * billsCount;
+                    stash.put( stashEntry.getKey(),  stashEntry.getValue() - billsCount);
                     System.out.print(stashEntry.getKey() + "=" + billsCount + ", ");
 
                     get(amount);
@@ -175,12 +180,12 @@ public class AtmInterface {
 
         int myKey = 0;
 
-        for (Map.Entry stashEntry : stash.entrySet()){
+        for (Map.Entry<Integer, Integer> stashEntry : stash.entrySet()){
 
-            if (((amount % (int) stashEntry.getKey()) == 0 ) && ((int) stashEntry.getValue() != 0)) {
+            if (((amount %  stashEntry.getKey()) == 0 ) && (stashEntry.getValue() != 0)) {
 
-                if (((amount / (int) stashEntry.getKey()) <= (int) stashEntry.getValue())) {
-                    myKey = (int) stashEntry.getKey();
+                if ((amount /  stashEntry.getKey()) <= stashEntry.getValue()) {
+                    myKey = stashEntry.getKey();
                     stash.put(myKey, stash.get(myKey) - amount/myKey);
                     System.out.println(myKey + "=" + amount/myKey + ", " + "всего " + (summa + amount));
                     amount = 0;
@@ -211,8 +216,8 @@ public class AtmInterface {
 
     private boolean hasElement(int amount) {
         boolean element = false;
-        for (Map.Entry stashEntry : stash.entrySet()) {
-            if ((amount >= (int) stashEntry.getKey()) && ((int) stashEntry.getValue() != 0)) {
+        for (Map.Entry<Integer, Integer> stashEntry : stash.entrySet()) {
+            if ((amount >= stashEntry.getKey()) && (stashEntry.getValue() != 0)) {
                 element = true;
             }
         }
@@ -235,7 +240,6 @@ public class AtmInterface {
 
     private void get(int amount) {
 
-
         if (amount > state()) {
             System.out.println("without " + (amount - state()));
             amount = state();
@@ -243,7 +247,6 @@ public class AtmInterface {
 
 
         int key = checkForNominal(amount);
-
         if (key != 0) {
             summa = 0;
             getInput();
@@ -251,13 +254,12 @@ public class AtmInterface {
             if (hasElement(amount)) {
                 getForAllStash(amount);
             } else {
-                System.out.println("without " + amount);
+                System.out.println("without " + amount + ", всего" + summa);
                 System.out.println("impossible");
                 summa = 0;
                 getInput();
             }
         }
-
     }
 
 
@@ -269,8 +271,8 @@ public class AtmInterface {
     private void dump() {
 
 
-        for (Map.Entry stashEntry : stash.entrySet()) {
-            if ((int) stashEntry.getValue() != 0)
+        for (Map.Entry<Integer, Integer> stashEntry : stash.entrySet()) {
+            if (stashEntry.getValue() != 0)
                 System.out.println(stashEntry.getKey() + "=" + stashEntry.getValue());
         }
     }
@@ -284,8 +286,8 @@ public class AtmInterface {
 
         int sum = 0;
 
-        for (Map.Entry stashEntry : stash.entrySet()) {
-            sum += (int) stashEntry.getKey() * (int) stashEntry.getValue();
+        for (Map.Entry<Integer, Integer> stashEntry : stash.entrySet()) {
+            sum += stashEntry.getKey() * stashEntry.getValue();
         }
 
         return sum;
